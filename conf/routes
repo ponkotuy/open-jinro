@@ -1,0 +1,10 @@
+
+GET /user/:userId controllers.UserController.show(userId: java.util.UUID)
+
+POST /room controllers.RoomController.create()
+POST /room/:roomId/join controllers.RoomController.join(roomId: java.util.UUID)
+PUT  /room/:roomId/start controllers.RoomController.start(roomId: java.util.UUID)
+
+PUT  /room/:roomId/vote controllers.VoteController.vote(roomId: java.util.UUID)
+
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
