@@ -12,7 +12,10 @@ object LynchingResult {
     def apply(room: Room, players: Seq[Player])(implicit session: DBSession): Unit = {
       destPlayer.kill()
       Lynching.create(room, destPlayer.id)
-      VictoryCheck.check(players)
+      VictoryCheck.check(players) match {
+        case x: VictoryCheckResult.Decided => x.apply()
+        case _ =>
+      }
     }
   }
   case class Revote(players: Seq[Player]) extends LynchingResult

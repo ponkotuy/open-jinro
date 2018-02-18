@@ -24,6 +24,7 @@ case class Player(
 
 object Player extends SkinnyCRUDMapperWithId[UUID, Player] {
   import Aliases.p
+  implicit def roleBinder = Role.binder
 
   override val defaultAlias: Alias[Player] = createAlias("p")
 

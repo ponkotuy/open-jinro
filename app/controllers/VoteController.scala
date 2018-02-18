@@ -5,12 +5,11 @@ import javax.inject.Inject
 
 import games.LynchingResult
 import io.circe.generic.auto._
-import io.circe.syntax._
-import models.{Player, Room, Vote}
+import models.{Player, Vote}
 import play.api.libs.circe.Circe
 import play.api.mvc.InjectedController
 import queries.CreateVote
-import scalikejdbc.{AutoSession, DB, DBSession}
+import scalikejdbc.DB
 
 class VoteController @Inject()() extends InjectedController with Circe {
   import Responses._
@@ -23,7 +22,8 @@ class VoteController @Inject()() extends InjectedController with Circe {
         val players = Player.findAllByRoom(room.id)
         val votes = Vote.findAllByRoom(room)
         LynchingResult(room, players, votes) match {
-          case x: Decided => x.apply(room)
+          case x: Decided => x.apply(room, players)
+          case _ =>
         }
         Success
       }

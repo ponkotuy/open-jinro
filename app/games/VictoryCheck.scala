@@ -11,15 +11,16 @@ object VictoryCheck {
       if(counts(Side.Werewolf) == 0) Some(Side.Villager)
       else if(counts(Side.Villager) <= counts(Side.Werewolf)) Some(Side.Werewolf)
       else None
-    if(tmp.isDefined && 0 < counts(Side.Fox)) Decided(Side.Fox) else tmp.fold[VictoryCheckResult](Continue)(Decided)
+    if(tmp.isDefined && 0 < counts(Side.Fox)) Decided(players)(Side.Fox)
+    else tmp.fold[VictoryCheckResult](Continue)(Decided(players))
   }
 }
 
 sealed abstract class VictoryCheckResult
 
 object VictoryCheckResult {
-  case class Decided(side: Side) extends VictoryCheckResult {
-    def apply(players: Seq[Player])(implicit session: DBSession): Unit = {
+  case class Decided(players: Seq[Player])(side: Side) extends VictoryCheckResult {
+    def apply()(implicit session: DBSession): Unit = {
       players.foreach { player =>
         if(player.role.side == side) player.win() else player.lose()
       }

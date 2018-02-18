@@ -4,7 +4,8 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 import scalikejdbc._
-import skinny.orm.{Alias, SkinnyCRUDMapper, SkinnyCRUDMapperWithId}
+import skinny.orm.{Alias, SkinnyCRUDMapper}
+import TypeBinders._
 
 case class Lynching(roomId: UUID, day: Int, userId: UUID, created: ZonedDateTime)
 
