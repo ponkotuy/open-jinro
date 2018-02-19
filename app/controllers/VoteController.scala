@@ -16,13 +16,13 @@ class VoteController @Inject()() extends InjectedController with Circe {
 
   def vote(roomId: UUID) = Action(circe.tolerantJson[CreateVote]) { implicit req =>
     import LynchingResult._
-    UserController.authRoom(roomId).map { case (user, room) =>
+    UserController.authRoom(roomId).map { auth =>
       DB localTx { implicit session =>
-        Vote.create(room, user.id, req.body.dest)
-        val players = Player.findAllByRoom(room.id)
-        val votes = Vote.findAllByRoom(room)
-        LynchingResult(room, players, votes) match {
-          case x: Decided => x.apply(room, players)
+        Vote.create(auth.room, auth.player.id, req.body.dest)
+        val players = Player.findAllByRoom(auth.room.id)
+        val votes = Vote.findAllByRoom(auth.room)
+        LynchingResult(auth.room, players, votes) match {
+          case x: Decided => x.apply(auth.room, players)
           case _ =>
         }
         Success

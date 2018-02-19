@@ -6,7 +6,7 @@ import javax.inject.Inject
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.java8.time._
-import models.{Room, User}
+import models.{Player, Room, User}
 import play.api.libs.circe.Circe
 import play.api.mvc.{InjectedController, Request, Result}
 import scalikejdbc.AutoSession
@@ -37,7 +37,7 @@ object UserController {
     User.findById(id)(AutoSession).get
   }
 
-  def authRoom[T](roomId: UUID)(implicit req: Request[T]): Either[Result, (User, Room)] = {
+  def authRoom[T](roomId: UUID)(implicit req: Request[T]): Either[Result, Authenticated] = {
     for {
       user <- getUser()
       room <- Room.findById(roomId).toRight(notFound(s"room: id=${roomId}"))
@@ -45,7 +45,8 @@ object UserController {
       xs <- req.headers.get("Authorization").toRight(BadReq).map(_.split(" "))
       Array(bearer, token) = xs
       _ <- Either.cond(bearer == "Bearer" && room.matches(token), Nil, BadReq)
-    } yield (user, room)
+      player <- user.player()(AutoSession).toRight(notFound(s"player: userId=${user.id}"))
+    } yield Authenticated(user, player, room)
   }
 
   def authRoomOwner[T](roomId: UUID)(implicit req: Request[T]): Either[Result, (User, Room)] = {
@@ -55,4 +56,6 @@ object UserController {
       _ <- Either.cond(room.owner == user.id, Nil, BadReq)
     } yield (user, room)
   }
+
+  case class Authenticated(user: User, player: Player, room: Room)
 }

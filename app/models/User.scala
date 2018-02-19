@@ -11,7 +11,9 @@ case class User(
     id: UUID,
     name: String,
     created: ZonedDateTime
-)
+) {
+  def player()(implicit session: DBSession): Option[Player] = Player.findLastByUser(id)
+}
 
 object User extends SkinnyCRUDMapperWithId[UUID, User] {
   override def idToRawValue(id: UUID): Any = id

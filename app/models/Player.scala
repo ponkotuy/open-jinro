@@ -35,6 +35,9 @@ object Player extends SkinnyCRUDMapperWithId[UUID, Player] {
 
   def findAllByRoom(roomId: UUID)(implicit session: DBSession): Seq[Player] = findAllBy(sqls.eq(p.roomId, roomId))
 
+  def findLastByUser(userId: UUID)(implicit session: DBSession): Option[Player] =
+    findAllBy(sqls.eq(p.userId, userId), orderings = p.created.desc :: Nil).headOption
+
   def create(
       userId: UUID,
       roomId: UUID,

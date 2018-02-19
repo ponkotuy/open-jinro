@@ -32,8 +32,8 @@ class RoomController @Inject()() extends InjectedController with Circe {
   }
 
   def join(roomId: UUID) = Action { implicit req =>
-    UserController.authRoom(roomId).map { case (user, room) =>
-      Join.create(user.id, room.id)(AutoSession)
+    UserController.authRoom(roomId).map { auth =>
+      Join.create(auth.user.id, auth.room.id)(AutoSession)
       Success
     }.merge
   }
